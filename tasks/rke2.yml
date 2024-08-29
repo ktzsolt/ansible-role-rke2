@@ -5,7 +5,13 @@
     url: "{{ rke2_install_bash_url }}"
     dest: "{{ rke2_install_script_dir }}/rke2.sh"
     mode: 0700
+    timeout: 30
   when: (not rke2_airgap_mode) or rke2_airgap_implementation == 'download'
+  register: download_rke2_install_script
+  until: download_rke2_install_script is not failed
+  retries: 5
+  delay: 5
+  throttle: 1
 
 - name: Copy local RKE2 installation script
   ansible.builtin.copy:
